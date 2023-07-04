@@ -2,6 +2,8 @@
 import {ref} from "vue";
 import {computedAsync} from '@vueuse/core'
 import {generate} from "./VerticalBelt.ts";
+import ItemIcon from "../components/ItemIcon.vue";
+import {itemIconId} from "../data/icons.ts";
 
 const rawConfig = ref({
     name: '传送带',
@@ -19,12 +21,12 @@ const rawConfig = ref({
     reversed: false
 })
 
-const copyBtnText=ref('复制蓝图')
+const copyBtnText = ref('复制蓝图')
 
-function copyBlueprint(){
-    let config={
+function copyBlueprint() {
+    let config = {
         ...rawConfig.value,
-        time:new Date()
+        time: new Date()
     }
     if (config.stepLength != 0)
         config.stepOffset = [
@@ -35,14 +37,14 @@ function copyBlueprint(){
         config.stepOffset = [0, 0]
     const result = generate(config)
     navigator.clipboard.writeText(result)
-        .then(()=>{
-            copyBtnText.value='已复制'
+        .then(() => {
+            copyBtnText.value = '已复制'
             setTimeout(() => {
                 copyBtnText.value = '复制蓝图'
             }, 1000)
         })
-        .catch((e)=>{
-            copyBtnText.value='发生异常！'
+        .catch((e) => {
+            copyBtnText.value = '发生异常！'
             console.error(e)
             setTimeout(() => {
                 copyBtnText.value = '复制蓝图'
@@ -51,14 +53,14 @@ function copyBlueprint(){
 }
 
 
-const beltIcons = computedAsync(async () => {
-    return (await Promise.all([1, 2, 3].map(async v => import((`../assets/item_recipe/belt-${v}.png`)).then(p => p.default))))
-})
+// const beltIcons = computedAsync(async () => {
+//     return (await Promise.all([1, 2, 3].map(async v => import((`../assets/item_recipe/belt-${v}.png`)).then(p => p.default))))
+// })
 const arrows = (i: number, j: number) => `↖↑↗←x→↙↓↘`[(j - 1) * 3 + i - 1]
 </script>
 
 <template>
-    <fieldset class="mt-4 p-4 border border-dashed border-opacity-30 rounded-md">
+    <fieldset class="mt-4 p-4 border border-dashed border-opacity-30 rounded-md container">
         <legend>戴森球竖直传送带蓝图工具</legend>
         <form class="grid grid-cols-2 align-middle items-center">
             <label>蓝图名</label>
@@ -103,7 +105,7 @@ const arrows = (i: number, j: number) => `↖↑↗←x→↙↓↘`[(j - 1) * 3
                      :class="[rawConfig.itemId==2000+i ?'border':'']"
                      v-for="i in 3"
                 >
-                    <img :src="beltIcons?beltIcons[i-1]:''">
+                    <ItemIcon :icon-id="itemIconId(2000+i)"/>
                 </div>
             </div>
             <label>传送带单位偏移方向</label>
@@ -129,11 +131,10 @@ const arrows = (i: number, j: number) => `↖↑↗←x→↙↓↘`[(j - 1) * 3
                 <input type="checkbox" class="w-auto" v-model="rawConfig.reversed">
             </div>
         </form>
-        <button type="button" class="border rounded px-8 py-3 mx-8 mt-4" @click="copyBlueprint">{{copyBtnText}}</button>
+        <button type="button"  @click="copyBlueprint">{{ copyBtnText }}
+        </button>
         <div class="text-xs text-right">
-            <span class="px-1">Author: Rika</span>
-            <span> | </span>
-            <a class="decoration-1 underline-offset-2 underline decoration-dashed" href="https://github.com/RikaKagurasaka/dsp-vertical-belt-blueprint">Github</a>
+
         </div>
     </fieldset>
 </template>

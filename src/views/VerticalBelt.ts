@@ -1,6 +1,6 @@
 import {BlueprintBuilding, toStr} from "../blueprint/parser.ts";
 
-export function generate(config:any) {
+export function generate(config: any) {
     let bp = {
         header: {
             layout: 10,
@@ -38,7 +38,7 @@ export function generate(config:any) {
             ],
             yaw: [180, 180],
             itemId: config.itemId,
-            modelIndex: 37,
+            modelIndex: config.itemId - 2003 + 37,
             outputObjIdx: -1,
             inputObjIdx: -1,
             outputToSlot: 1,

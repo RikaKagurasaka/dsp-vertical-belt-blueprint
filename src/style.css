@@ -2,26 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
-:root{
+:root {
     @apply bg-slate-900 text-gray-100
 }
 
-#app{
+#app {
 
 }
 
-input{
+input, textarea {
     @apply bg-slate-800 p-1 px-2
 }
 
-abbr{
+abbr {
     @apply pl-1 text-gray-300
 }
 
-.container{
+a {
+    @apply decoration-1 underline-offset-4 underline decoration-dashed
+}
+
+button {
+    @apply border rounded px-8 py-3 mx-8 mt-4
+}
+
+.container {
     @apply mx-auto my-4 p-4 max-w-lg
 }
 
-form.grid{
+form.grid {
     @apply gap-2
 }
