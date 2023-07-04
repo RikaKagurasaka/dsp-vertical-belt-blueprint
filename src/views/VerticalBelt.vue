@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {ref} from "vue";
-import {computedAsync} from '@vueuse/core'
 import {generate} from "./VerticalBelt.ts";
 import ItemIcon from "../components/ItemIcon.vue";
 import {itemIconId} from "../data/icons.ts";

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import VerticalBelt from "./views/VerticalBelt.vue";
 </script>
 
 <template>

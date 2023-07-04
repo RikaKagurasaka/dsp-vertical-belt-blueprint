@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {computed, ComputedRef, h, ref, watch} from "vue";
-import {BlueprintBuilding, fromStr, toStr} from "../blueprint/parser.ts";
+import {computed, ref, watch} from "vue";
+import {fromStr, toStr} from "../blueprint/parser.ts";
 import ItemIcon from "../components/ItemIcon.vue";
 import {itemsMap} from "../data";
 import {itemIconId, recipeIconId} from "../data/icons.ts";
@@ -103,7 +103,7 @@ function remove() {
                             <span>{{ selected.itemId }}</span>
                             <ItemIcon class="w-8 h-8 inline ml-4" :icon-id="itemIconId(selected.itemId)"/>
                         </div>
-                        <div :class="{omitted:itemsMap.get(selected.itemId).models.length<=1}">
+                        <div :class="{omitted:itemsMap.get(selected.itemId)!.models.length<=1}">
                             <label>modelIndex: </label>
                             <span>{{ selected.modelIndex }}</span>
                         </div>
@@ -139,7 +139,7 @@ function remove() {
                             <label>inputObjIdx: </label>
                             <span>{{ selected.inputObjIdx }}</span>
                             <ItemIcon class="w-8 h-8 inline ml-4 hover:bg-gray-500 cursor-pointer"
-                                      :icon-id="itemIconId(findBuilding(selected.inputObjIdx).itemId)"
+                                      :icon-id="itemIconId(findBuilding(selected.inputObjIdx)!.itemId)"
                                       v-if="selected.inputObjIdx!=-1" @click="selectedBuildingIndex = selected.inputObjIdx"
                             />
                         </div>
@@ -161,7 +161,7 @@ function remove() {
                             <label>outputObjIdx: </label>
                             <span>{{ selected.outputObjIdx }}</span>
                             <ItemIcon class="w-8 h-8 inline ml-4 hover:bg-gray-500 cursor-pointer"
-                                      :icon-id="itemIconId(findBuilding(selected.outputObjIdx).itemId)"
+                                      :icon-id="itemIconId(findBuilding(selected.outputObjIdx)!.itemId)"
                                       v-if="selected.outputObjIdx!=-1" @click="selectedBuildingIndex = selected.outputObjIdx"
                             />
                         </div>
