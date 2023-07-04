@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root{
+    @apply bg-slate-900 text-gray-100
+}
+
+#app{
+
+}
+
+input{
+    @apply bg-slate-800 p-1 px-2
+}
+
+abbr{
+    @apply pl-1 text-gray-300
+}
+
+.container{
+    @apply mx-auto my-4 p-4 max-w-lg
+}
+
+form.grid{
+    @apply gap-2
+}
