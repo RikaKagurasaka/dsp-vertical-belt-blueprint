@@ -37,8 +37,10 @@ const isCodeEditing = ref(false)
 const code = ref(`export default function (buildings) {
     for (let b of buildings) {
         if (2001 <= b.itemId && b.itemId <= 2003) {
-            b.localOffset[0].z += 1
-            b.localOffset[1].z += 1
+            let {x, y, z} = b.localOffset[0]
+            z += 1
+            b.localOffset[0] = {x, y, z}
+            b.localOffset[1] = {x, y, z}
         }
     }
     return buildings
