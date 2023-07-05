@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import {computedAsync} from "@vueuse/core";
 import {iconUrl} from "../data/icons.ts";
+import {computed} from "vue";
 
 const prop = defineProps<{ iconId: number }>()
-const imgSrc = computedAsync(() => iconUrl(prop.iconId), '')
+const imgSrc = computed(() => iconUrl(prop.iconId))
 </script>
 
 <template>

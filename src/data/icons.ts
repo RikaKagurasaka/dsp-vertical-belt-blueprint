@@ -1,8 +1,8 @@
 import { itemsMap } from "./items";
 import { recipesMap } from "./recipes";
 
-export async function itemRecipeIconUrl(name:string): Promise<string> {
-    return (await import(/* webpackMode: "eager" */`/src/assets/item_recipe/${name}.png`)).default;
+export  function itemRecipeIconUrl(name:string): string {
+    return `/item_recipe/${name}.png`
 }
 
 export function signalIconId(signalId: number) { return signalId; }

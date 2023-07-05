@@ -4,6 +4,7 @@ import {fromStr, toStr} from "../blueprint/parser.ts";
 import ItemIcon from "../components/ItemIcon.vue";
 import {itemsMap} from "../data";
 import {itemIconId, recipeIconId} from "../data/icons.ts";
+import {VAceEditor} from "vue3-ace-editor/index";
 
 const blueprintStr = ref("")
 const parsed = computed(() => {
@@ -20,6 +21,7 @@ const selected = computed(() => findBuilding(selectedBuildingIndex.value))
 const editingJson = ref('')
 
 watch(selectedBuildingIndex, () => {
+    //@ts-ignore
     editingJson.value = JSON.stringify(selected.value, undefined, 4)
 })
 
@@ -27,6 +29,35 @@ watch(blueprintStr, () => {
     if (!parsed || !selected) {
         selectedBuildingIndex.value = -1
         editingJson.value = ''
+    }
+})
+
+const isCodeEditing = ref(false)
+// language=javascript
+const code = ref(`export default function (buildings) {
+    for (let b of buildings) {
+        if (2001 <= b.itemId && b.itemId <= 2003) {
+            b.localOffset[0].z += 1
+            b.localOffset[1].z += 1
+        }
+    }
+    return buildings
+}
+`)
+const transformedBlueprint = ref('')
+watch([blueprintStr, parsed, code, isCodeEditing], async () => {
+    try {
+        const url = URL.createObjectURL(new Blob([code.value], {type: "text/javascript"}))
+        const func = await import(url).then(v => v.default)
+        URL.revokeObjectURL(url)
+        let buildings = JSON.parse(JSON.stringify(parsed.value!.buildings))
+        buildings = func(buildings) || []
+        transformedBlueprint.value = toStr({
+            ...parsed.value!,
+            buildings
+        })
+    } catch (e) {
+        transformedBlueprint.value = e as any
     }
 })
 
@@ -78,6 +109,7 @@ function remove() {
         <template v-if="parsed">
             <fieldset style="grid-column: 1/2;grid-row: 2/3;" class="overflow-y-auto">
                 <legend>建筑列表（共{{ parsed.buildings.length }}个）</legend>
+                <input type="checkbox" v-model="isCodeEditing"><label class="mx-1">批量编辑</label>
                 <div class="grid h-fit" style="grid-template-columns: repeat(auto-fill,3.25rem)">
                     <div v-for="b in parsed.buildings" class="w-12 h-12 m-1 hover:bg-gray-500 cursor-pointer"
                          :class="{'bg-gray-700':selectedBuildingIndex==b.index}"
@@ -87,8 +119,10 @@ function remove() {
                     </div>
                 </div>
             </fieldset>
-            <template v-if="selected">
-                <fieldset style="grid-column: 2/3;grid-row: 1/3;" class="overflow-y-auto">
+            <template v-if="selected ">
+                <fieldset style="grid-column: 2/3;" :style="{
+                    gridRow: isCodeEditing?'2/3':'1/3'
+                }" class="overflow-y-auto">
                     <legend>{{ itemsMap.get(selected.itemId)?.name }}
                         <ItemIcon class="w-8 h-8 inline ml-2" :icon-id="itemIconId(selected.itemId)"/>
                         @ {{ selected.index }}
@@ -197,16 +231,27 @@ function remove() {
                             <span>{{ selected.parameters }}</span>
                         </div>
                         <hr class="flex-1"/>
-                        <div class="flex justify-around">
+                        <div class="flex justify-around" v-if="!isCodeEditing">
                             <button type="button" class="flex-1" @click="clone">克隆</button>
                             <button type="button" class="flex-1 border-red-400 text-red-400" @click="remove">删除</button>
                         </div>
                     </div>
                 </fieldset>
-                <fieldset style="grid-column: 3/4;grid-row: 1/3;" class="flex flex-col">
+                <fieldset style="grid-column: 3/4;grid-row: 1/3;" class="flex flex-col" v-if="!isCodeEditing">
                     <legend>建筑编辑</legend>
-                    <textarea class="w-full flex-1" v-model="editingJson" spellcheck="false"></textarea>
+                    <!--                    <AceEditor id="editor_build_json" v-model:value="editingJson" mode="json" class="flex-1"/>-->
+                    <v-ace-editor v-model:value="editingJson" mode="json" theme="one_dark" class="flex-1"/>
                     <button type="button" @click="submitEdition">提交</button>
+                </fieldset>
+            </template>
+            <template v-if="isCodeEditing">
+                <fieldset style="grid-column: 2/4;grid-row: 1/2;" class="overflow-y-auto">
+                    <legend>批量编辑</legend>
+                    <v-ace-editor v-model:value="code" mode="javascript" theme="one_dark" class="w-full h-full"/>
+                </fieldset>
+                <fieldset style="grid-column: 3/4;grid-row: 2/3;" class="overflow-y-auto">
+                    <legend>编辑结果</legend>
+                    <textarea class="w-full h-full" :value="transformedBlueprint" readonly/>
                 </fieldset>
             </template>
         </template>
